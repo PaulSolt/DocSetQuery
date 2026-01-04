@@ -8,3 +8,9 @@
 - Inline comments referencing governed docs must use `// Agent: Required reading ...` format when code depends on blueprint guidance.
 - Respect 500-line guardrail by extracting helpers instead of growing monolith files.
 - Use `AGENT=<name>` for builds/logs (avoid `Paul`); long runs go in tmux when needed.
+
+## Docs sync helper (`scripts/sync_docs.sh`)
+- Canonical docs live outside the repo (e.g., `~/docs/apple`); repo `docs/apple` is cache-only and `.gitignored`.
+- Pull canonical -> repo: `DOCS_SOURCE=~/docs/apple scripts/sync_docs.sh pull --allow-delete` (add `--dry-run` to preview; `--allow-delete` mirrors/overwrites).
+- Push repo -> canonical: `DOCS_SOURCE=~/docs/apple scripts/sync_docs.sh push` (add `--allow-delete` only if you intend a mirror).
+- Safe defaults: push never deletes unless `--allow-delete`; always run with `--dry-run` if uncertain.

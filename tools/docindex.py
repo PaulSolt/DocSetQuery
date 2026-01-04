@@ -12,6 +12,9 @@ from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Dict, Iterable, List, Optional, Sequence
+import sys
+
+from docmeta import peek_markdown
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 DEFAULT_DOCS_ROOT = PROJECT_ROOT / "docs" / "apple"
@@ -208,7 +211,40 @@ def build_parser() -> argparse.ArgumentParser:
     search_parser.add_argument("term", help="Search term (case-insensitive substring).")
 
     subparsers.add_parser("rebuild", help="Rebuild the index from docs/apple.")
+
+    skim_parser = subparsers.add_parser(
+        "skim",
+        help="Inspect front matter (and optional TOC) without reading full markdown files.",
+    )
+    skim_parser.add_argument(
+        "--input",
+        action="append",
+        help="Markdown file to skim (repeatable). If omitted, skims all *.md under --docs-root.",
+    )
+    skim_parser.add_argument(
+        "--toc",
+        action="store_true",
+        help="Include the Table of Contents block (scans until next heading).",
+    )
+    skim_parser.add_argument(
+        "--max-lines",
+        type=int,
+        default=800,
+        help="Maximum lines to scan when searching for TOC (default: 800).",
+    )
     return parser
+
+
+def skim_files(paths: Sequence[Path], include_toc: bool, max_lines: int) -> List[Dict[str, object]]:
+    results: List[Dict[str, object]] = []
+    for path in paths:
+        try:
+            info = peek_markdown(path, include_toc=include_toc, max_lines=max_lines)
+        except FileNotFoundError:
+            print(f"[docindex] Missing file: {path}", file=sys.stderr)
+            continue
+        results.append(info)
+    return results
 
 
 def main(argv: Optional[Sequence[str]] = None) -> int:
@@ -232,6 +268,19 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
         else:
             for line in results:
                 print(line)
+        return 0
+    if args.command == "skim":
+        target_paths: List[Path]
+        if args.input:
+            target_paths = [Path(p).expanduser() for p in args.input]
+        else:
+            target_paths = sorted(docs_root.glob("*.md"))
+        if not target_paths:
+            print(f"[docindex] No markdown files found under {docs_root}", file=sys.stderr)
+            return 1
+        results = skim_files(target_paths, include_toc=args.toc, max_lines=args.max_lines)
+        for entry in results:
+            print(json.dumps(entry))
         return 0
     parser.print_help()
     return 1

@@ -1,0 +1,50 @@
+# OS junk
+.DS_Store
+
+# Editors
+*.swp
+*.swo
+.idea/
+.vscode/
+
+# Python build artifacts
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.env
+.venv/
+venv/
+.envrc
+.poetry/
+dist/
+build/
+pip-wheel-metadata/
+*.egg-info/
+.eggs/
+
+# Python tooling caches
+.cache/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+coverage.*
+htmlcov/
+.tox/
+
+# Doc toolkit outputs
+Build/
+docs/apple
+
+# PyInstaller / packaging
+*.spec
+
+# Swift / Xcode
+.build/
+.swiftpm/
+.swiftpm/xcode/
+DerivedData/
+xcuserdata/
+*.xcuserstate
+*.dSYM
