@@ -1,5 +1,7 @@
 # DocSetQuery
 
+![DocSetQuery hero](hero.png)
+
 Local-first Apple documentation extraction, cleanup, and search. Built for fast developer lookup and agent workflows that need deterministic, citeable Markdown instead of scraping the web.
 
 This repo is a working toolkit and a work in progress. Not all planned features are fully implemented yet. It assumes you already have the Apple API Reference docset (Dash docset) on disk and a `brotli` CLI available.
